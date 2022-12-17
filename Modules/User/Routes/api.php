@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\User\Http\Controllers\Auth\AuthController;
+use Modules\User\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,5 @@ Route::prefix('v1')->group(function () {
         'throttle:5,1'
     )->name('password.email');
     Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.reset');
+    Route::apiResource('users', UserController::class)->except('store', 'update');
 });
