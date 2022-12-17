@@ -31,7 +31,10 @@ class AuthController extends Controller
                 'password' => bcrypt($request['password']),
             ]
         )) {
-            return response()->json(null, 201);
+            return response()->json([
+                'status'  => true,
+                'message' => 'User Created Successfully',
+            ], 200);
         }
         
         return response()->json(null, 404);
@@ -63,10 +66,8 @@ class AuthController extends Controller
     */
     public function logout(Request $request)
     {
-        // Revoke the token that was used to authenticate the current request
         $request->user()->currentAccessToken()->delete();
         
-        //$request->user->tokens()->delete(); // use this to revoke all tokens (logout from all devices)
         return response()->json(null, 200);
     }
     

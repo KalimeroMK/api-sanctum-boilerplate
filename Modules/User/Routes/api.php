@@ -14,8 +14,8 @@ use Modules\User\Http\Controllers\Auth\AuthController;
 |
 */
 
-Route::prefix('api/v1')->group(function () {
-    Route::post('signup', [AuthController::class, 'signup'])->name('auth.signup');
+Route::prefix('v1')->group(function () {
+    Route::post('register', [AuthController::class, 'signup'])->name('auth.signup');
     Route::post('login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('auth.logout');
     Route::get('user', [AuthController::class, 'getAuthenticatedUser'])->middleware('auth:sanctum')->name('auth.user');

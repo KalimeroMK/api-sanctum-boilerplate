@@ -2,78 +2,79 @@
 
 namespace Modules\User\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Modules\User\Http\Helper\Helper;
+use Modules\User\Http\Resources\UserResource;
+use Modules\User\Service\UserService;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index()
+    
+    private UserService $user_service;
+    
+    public function __construct(UserService $user_service)
     {
-        return view('user::index');
+        $this->user_service = $user_service;
     }
-
+    
     /**
-     * Show the form for creating a new resource.
-     * @return Renderable
+     * @return AnonymousResourceCollection
      */
-    public function create()
+    public function index(): AnonymousResourceCollection
     {
-        return view('user::create');
+        return UserResource::collection($this->user_service->getAll());
     }
-
+    
     /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
+     * @param $id
+     *
+     * @return JsonResponse|string
      */
     public function show($id)
     {
-        return view('user::show');
+        try {
+            return $this
+                ->setMessage(
+                    __(
+                        'apiResponse.ok',
+                        [
+                            'resource' => Helper::getResourceName(
+                                $this->user_service->user_repository->model
+                            ),
+                        ]
+                    )
+                )
+                ->respond(new UserResource($this->user_service->show($id)));
+        } catch (Exception $exception) {
+            return $exception->getMessage();
+        }
     }
-
+    
     /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('user::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
+     * @param $id
+     *
+     * @return JsonResponse|string
      */
     public function destroy($id)
     {
-        //
+        try {
+            return $this
+                ->setMessage(
+                    __(
+                        'apiResponse.deleteSuccess',
+                        [
+                            'resource' => Helper::getResourceName(
+                                $this->user_service->user_repository->model
+                            ),
+                        ]
+                    )
+                )
+                ->respond($this->user_service->destroy($id));
+        } catch (Exception $exception) {
+            return $exception->getMessage();
+        }
     }
 }
