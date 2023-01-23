@@ -4,7 +4,7 @@ services:
     build:
       context: .docker
       dockerfile: Dockerfile
-    container_name: app
+    container_name: app_sanctum
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
@@ -16,7 +16,7 @@ services:
       - laravelapp
   db:
     image: mariadb:latest
-    container_name: mysql
+    container_name: mysql_sanctum
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: homestead
@@ -26,7 +26,7 @@ services:
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     ports:
-      - "3307:3306"
+      - "3309:3306"
     volumes:
       - ./.docker/dbdata:/var/lib/mysql
       - ./.docker/mysql/my.cnf:/etc/mysql/my.cnf
@@ -34,10 +34,10 @@ services:
       - laravelapp
   nginx:
     image: nginx:latest
-    container_name: nginx
+    container_name: nginx_sanctum
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "83:80"
     volumes:
       - ./:/var/www
       - ./.docker/nginx:/etc/nginx/conf.d
