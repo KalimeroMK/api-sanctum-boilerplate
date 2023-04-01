@@ -6,7 +6,7 @@ laravel boilerplate with api auth using sanctum (signup, login, logout, reset pa
 
 Details of starter laravel project
 
-- Laravel v9.4
+- Laravel v10
 - Sanctum v3.0
 
 ## Setup Instructions
