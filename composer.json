@@ -1,7 +1,6 @@
 {
-    "name": "laravel/laravel",
-    "type": "project",
-    "description": "The Laravel Framework.",
+    "name": "kalimeromk/api-sanctum-boilerplate",
+    "description": "Laravel base API boilerplate ",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
