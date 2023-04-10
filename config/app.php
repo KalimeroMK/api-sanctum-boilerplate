@@ -185,7 +185,11 @@ return [
         /*
          * Package Service Providers...
          */
-
+        \Modules\Core\Providers\CoreServiceProvider::class,
+        \Modules\Auth\Providers\AuthServiceProvider::class,
+        \Modules\User\Providers\UserServiceProvider::class,
+        \Modules\Role\Providers\RoleServiceProvider::class,
+        \Modules\Permission\Providers\PermissionServiceProvider::class,
         /*
          * Application Service Providers...
          */

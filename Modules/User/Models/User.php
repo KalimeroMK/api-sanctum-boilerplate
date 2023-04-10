@@ -2,46 +2,52 @@
 
 namespace Modules\User\Models;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\HasApiTokens as ApiToken;
+use Modules\Category\Models\Category;
+use Modules\Crematorium\Models\Crematorium;
+use Modules\News\Models\News;
+use Modules\Organization\Models\Organization;
+use Modules\User\Database\factories\UserFactory;
+use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    use Notifiable;
+    use HasFactory;
+    use ApiToken;
+    use HasRoles;
+    use HasPermissions;
+    use SoftDeletes;
+
+    protected string $guard_name = 'api';
+
+
+    protected $table = 'users';
+
+    protected $dates = [
+        'email_verified_at'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
+
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'password',
+        'remember_token'
     ];
-    
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-    
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-    
+
     /**
      * @return UserFactory
      */

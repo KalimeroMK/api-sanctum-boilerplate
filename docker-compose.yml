@@ -26,7 +26,7 @@ services:
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     ports:
-      - "3309:3306"
+      - "3312:3306"
     volumes:
       - ./.docker/dbdata:/var/lib/mysql
       - ./.docker/mysql/my.cnf:/etc/mysql/my.cnf
@@ -37,7 +37,7 @@ services:
     container_name: nginx_sanctum
     restart: unless-stopped
     ports:
-      - "83:80"
+      - "88:80"
     volumes:
       - ./:/var/www
       - ./.docker/nginx:/etc/nginx/conf.d

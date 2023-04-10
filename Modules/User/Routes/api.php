@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Modules\User\Http\Controllers\Auth\AuthController;
 use Modules\User\Http\Controllers\UserController;
 
 /*
@@ -15,14 +13,8 @@ use Modules\User\Http\Controllers\UserController;
 |
 */
 
-Route::prefix('v1')->group(function () {
-    Route::post('register', [AuthController::class, 'signup'])->name('auth.signup');
-    Route::post('login', [AuthController::class, 'login'])->name('auth.login');
-    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('auth.logout');
-    Route::get('user', [AuthController::class, 'getAuthenticatedUser'])->middleware('auth:sanctum')->name('auth.user');
-    Route::post('/password/email', [AuthController::class, 'sendPasswordResetLinkEmail'])->middleware(
-        'throttle:5,1'
-    )->name('password.email');
-    Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.reset');
-    Route::apiResource('users', UserController::class)->except('store', 'update');
-});
+Route::apiResource('users', UserController::class)->except('update');
+Route::get('userinfo', [UserController::class, 'authUser']);
+Route::post('user_news_category', [UserController::class, 'addUsersNewsCategory']);
+Route::post('users/{id}', [UserController::class, 'update'])->name('user.update');
+Route::post('users_restore/{id}', [UserController::class, 'restore'])->name('user.restore');
