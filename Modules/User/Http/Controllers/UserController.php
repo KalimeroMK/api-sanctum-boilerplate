@@ -2,19 +2,19 @@
 
 namespace Modules\User\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Modules\Core\Helpers\Helper;
+use Modules\Core\Http\Controllers\CoreController;
 use Modules\User\Http\Requests\UpdateRequest;
 use Modules\User\Http\Resources\UserResource;
 use Modules\User\Models\User;
 use Modules\User\Service\UserService;
 
 
-class UserController extends Controller
+class UserController extends CoreController
 {
 
     private UserService $user_service;

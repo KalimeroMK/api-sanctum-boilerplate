@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use Modules\User\Http\Controllers\UserController;
 
 /*
@@ -13,8 +14,5 @@ use Modules\User\Http\Controllers\UserController;
 |
 */
 
-Route::apiResource('users', UserController::class)->except('update');
-Route::get('userinfo', [UserController::class, 'authUser']);
-Route::post('user_news_category', [UserController::class, 'addUsersNewsCategory']);
-Route::post('users/{id}', [UserController::class, 'update'])->name('user.update');
+Route::apiResource('users', UserController::class);
 Route::post('users_restore/{id}', [UserController::class, 'restore'])->name('user.restore');

@@ -1,0 +1,394 @@
+  Metamug  Metamug
+    Services
+    Blog
+    Postman Collection to Swagger
+
+
+
+    Swagger(Open API)
+    Swagger UI
+  openapi: 3.0.0
+  info:
+    title: BrickScan
+    version: 1.0.0
+  servers:
+    - url: http://{{baseurl}}
+  components:
+    securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+  tags:
+    - name: Auth
+    - name: User
+    - name: Permission
+    - name: Role
+  paths:
+    /login:
+      post:
+        tags:
+          - Auth
+        summary: Login
+        requestBody:
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: superadmin@mail.com
+                  password:
+                    type: string
+                    example: password
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /register:
+      post:
+        tags:
+          - Auth
+        summary: Register
+        requestBody:
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Test User
+                  email:
+                    type: string
+                    example: test@gmail.com
+                  password:
+                    type: string
+                    example: password
+                  password_confirmation:
+                    type: string
+                    example: password
+                  image:
+                    type: string
+                    format: binary
+                  date_of_birth:
+                    type: string
+                    example: 2022.04.04
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /password/email:
+      post:
+        tags:
+          - Auth
+        summary: Reset email
+        requestBody:
+          content: {}
+        parameters:
+          - name: email
+            in: query
+            schema:
+              type: string
+            example: neti123@gmail.com
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /password/reset:
+      post:
+        tags:
+          - Auth
+        summary: Reset password
+        requestBody:
+          content: {}
+        parameters:
+          - name: email
+            in: query
+            schema:
+              type: string
+            example: test@gmail.com
+          - name: token
+            in: query
+            schema:
+              type: string
+            example: tUSap0bBA7PMix8lRux3N4kVaY1ibIVE4Q24N9YskMy4lmOvFNqQrhxZ3Rwr
+          - name: password
+            in: query
+            schema:
+              type: string
+            example: newpassword
+          - name: password_confirmation
+            in: query
+            schema:
+              type: string
+            example: newpassword
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /users:
+      get:
+        tags:
+          - User
+        summary: Index
+        security:
+          - bearerAuth: []
+        parameters:
+          - name: per_page
+            in: query
+            schema:
+              type: integer
+            example: '12'
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /users/12:
+      get:
+        tags:
+          - User
+        summary: Show
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /users/2:
+      patch:
+        tags:
+          - User
+        summary: Update
+        requestBody:
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Test User
+                  email:
+                    type: string
+                    example: test@gmail.com
+                  password:
+                    type: string
+                    example: password
+                  password_confirmation:
+                    type: string
+                    example: password
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /users_restore/41:
+      post:
+        tags:
+          - User
+        summary: Users restore
+        requestBody:
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Test User
+                  email:
+                    type: string
+                    example: test@gmail.com
+                  password:
+                    type: string
+                    example: password
+                  password_confirmation:
+                    type: string
+                    example: password
+                  image:
+                    type: string
+                    format: binary
+                  date_of_birth:
+                    type: string
+                    example: 2022.04.04
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /users/3:
+      delete:
+        tags:
+          - User
+        summary: Destory
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /permission:
+      get:
+        tags:
+          - Permission
+        summary: Index
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+      post:
+        tags:
+          - Permission
+        summary: Store
+        requestBody:
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: test1k
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /permission/1:
+      get:
+        tags:
+          - Permission
+        summary: Show
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /permission/3:
+      patch:
+        tags:
+          - Permission
+        summary: Update
+        requestBody:
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    example: test12
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+      delete:
+        tags:
+          - Permission
+        summary: Destory
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /role:
+      get:
+        tags:
+          - Role
+        summary: Index
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+      post:
+        tags:
+          - Role
+        summary: Store
+        requestBody:
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: test1k
+                  permission:
+                    type: integer
+                    example: '1'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /role/4:
+      get:
+        tags:
+          - Role
+        summary: Show
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+    /role/3:
+      patch:
+        tags:
+          - Role
+        summary: Update
+        requestBody:
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    example: test12
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}
+      delete:
+        tags:
+          - Role
+        summary: Destory
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            description: Successful response
+            content:
+              application/json: {}

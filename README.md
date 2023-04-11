@@ -1,6 +1,7 @@
 # Laravel sanctum auth boilerplate
 
-laravel boilerplate with api auth using sanctum (signup, login, logout, reset password)
+laravel boilerplate with api auth using sanctum (signup, login, logout, reset password) and Spatie permission 
+package for roles and permission setup with seeder for it 
 
 ## Use starter project
 
@@ -8,6 +9,7 @@ Details of starter laravel project
 
 - Laravel v10
 - Sanctum v3.0
+- Spatie/laravel-permission v5.7
 
 ## Setup Instructions
 
@@ -18,13 +20,12 @@ Details of starter laravel project
 5. Set your database credentials in your .env file
 6. Run php artisan migrate:fresh --seed
 7. run command[laravel file manager]:- php artisan storage:link
-8. Edit .env file :- remove APP_URL
-9. php artisan serve or use virtual host
-10. Visit localhost:8000 in your browser
-11. Visit /admin if you want to access the admin panel. Admin Email/Password: superadmin@mail.com/password. User
+8. php artisan serve or use virtual host
+9. Visit localhost:8000 in your browser
+10. Visit /admin if you want to access the admin panel. Admin Email/Password: superadmin@mail.com/password. User
     Email/Password:
     client@mail.com/password
-12. Test run: vendor/bin/phpunit
+11. Test run: vendor/bin/phpunit
 
 ### Requirements installation and configuration for docker
 
@@ -37,19 +38,38 @@ Details of starter laravel project
 
 ### Endpoints for API Authentication
 
-The auth routes are present in `routes/api.php` and prefixed with `auth` as follows:
+The auth routes are present in `Modules/Auth/routes/api.php` as follows:
 
 ```php
-Route::prefix('/v1')->group(function () {
     Route::post('signup', [AuthController::class,'signup'])->name('auth.signup');
     Route::post('login', [AuthController::class,'login'])->name('auth.login');
     Route::post('logout', [AuthController::class,'logout'])->middleware('auth:sanctum')->name('auth.logout');
-    Route::get('user', [AuthController::class,'getAuthenticatedUser'])->middleware('auth:sanctum')->name('auth.user');
     Route::post('/password/email', [AuthController::class,'sendPasswordResetLinkEmail'])->middleware('throttle:5,1')->name('password.email');
     Route::post('/password/reset', [AuthController::class,'resetPassword'])->name('password.reset');
-});
 ```
 
+### Endpoints for API User
+
+The auth routes are present in `Modules/User/routes/api.php` as follows:
+
+```php
+   Route::apiResource('users', UserController::class);
+   Route::post('users_restore/{id}', [UserController::class, 'restore'])->name('user.restore');
+```
+### Endpoints for API Role
+
+The auth routes are present in `Modules/Role/routes/api.php` as follows:
+
+```php
+   Route::apiResource('role', RoleController::class);
+```
+### Endpoints for API Permission
+
+The auth routes are present in `Modules/Permission/routes/api.php` as follows:
+
+```php
+   Route::apiResource('permission', PermissionController::class);
+```
 Hence all the api auth routes are prefixed with `/api/v1` and the routes are:
 
 ### api endpoints
