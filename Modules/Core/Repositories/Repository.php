@@ -95,17 +95,15 @@ class Repository implements RepositoryInterface
      */
     public function restore($id): mixed
     {
-        $object = $this->findByIdWithTrashed($id);
-            $object->restore($id);
-            return $object;
+        return $this->findByIdWithTrashed($id)->restore();
     }
 
     /**
-     * @param  $id
+     * @param $id
      * @return mixed
      */
     public function findByIdWithTrashed($id): mixed
     {
-       return $this->model::withTrashed()->find($id);
+        return $this->model::withTrashed()->findOrFail($id);
     }
 }
