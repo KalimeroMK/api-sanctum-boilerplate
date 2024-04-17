@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 
 # Install system dependencies
@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y \
     nano \
     unzip \
     libicu-dev \
-    python3 \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install mbstring \
     && docker-php-ext-install exif \
@@ -29,12 +28,6 @@ RUN docker-php-ext-configure gd --with-jpeg && \
 #Xdebug
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
-# Node.js
-RUN curl -sL https://deb.nodesource.com/setup_15.x -o nodesource_setup.sh
-RUN bash nodesource_setup.sh
-RUN apt-get install nodejs -y
-RUN command -v node
-RUN command -v npm
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

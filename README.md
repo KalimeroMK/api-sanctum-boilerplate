@@ -7,9 +7,9 @@ package for roles and permission setup with seeder for it
 
 Details of starter laravel project
 
-- Laravel v10
-- Sanctum v3.0
-- Spatie/laravel-permission v5.7
+- Laravel v11
+- Sanctum v4.0
+- Spatie/laravel-permission v6.4
 
 ## Setup Instructions
 
