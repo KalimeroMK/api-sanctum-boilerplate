@@ -6,15 +6,12 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Modules\Auth\Http\Requests\CreateRequest;
 use Modules\Core\Traits\ImageUpload;
+use Modules\User\Http\Resources\UserResource;
 use Modules\User\Models\User;
 
 class AuthController extends Controller
@@ -47,31 +44,38 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function login(Request $request): JsonResponse
+    public function login(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-                'email' => 'required|email|exists:users',
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|exists:users,email',
                 'password' => 'required'
-            ]
-        );
-
-        if ($validate->fails()) {
-            return response()->json([
-                'error' => $validate->errors(),
-            ], 500);
-        }
-        $user = User::whereEmail($request['email'])->first();
-
-        if (!$user || !Hash::check($request['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
             ]);
-        }
 
-        return response()->json([
-            'user' => $user,
-            'access_token' => $user->createToken($request['email'])->plainTextToken,
-        ], 200);
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'errors' => ['email' => ['The provided credentials are incorrect.']]
+                ], 422);
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Internal Server Error'], 500);
+        }
     }
 
     /**
@@ -93,12 +97,9 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function getAuthenticatedUser(Request $request): JsonResponse
+    public function getAuthenticatedUser(Request $request)
     {
-        $user = $request->user();
-        return response()->json([
-            'user' => $user
-        ], 200);
+        return response()->json(new UserResource($request->user()), 200);
     }
 
     /**
@@ -107,37 +108,32 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function sendPasswordResetLinkEmail(Request $request): JsonResponse
+    public function sendPasswordResetLinkEmail(Request $request)
     {
-        $request->validate(['email' => 'required|email|exists:users']);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+        ]);
 
-        // Delete all old codes that user sent before.
-        DB::table('password_resets')->where([
-            ['email', $request['email']],
-        ])->delete();
-        $token = Str::random(60);
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        DB::table('password_resets')
-            ->insert(
-                [
-                    'email' => $request['email'],
-                    'token' => $token,
-                    'created_at' => Carbon::now(),
-                ]
-            );
-
-        Mail::send('email.forgetPassword', ['token' => $token], function ($message) use ($request) {
-            $message->to($request->email);
-            $message->subject('Reset Password');
-        });
-
-        return new JsonResponse(
-            [
-                'success' => true,
-                'message' => 'We have e-mailed your password reset token',
-            ],
-            200
+        $status = Password::sendResetLink(
+            $request->only('email')
         );
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => __($status)
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => __($status)
+            ], 500);
+        }
+
     }
 
     /**

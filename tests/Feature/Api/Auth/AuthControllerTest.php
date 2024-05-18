@@ -14,8 +14,7 @@ class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-
-    public function setUp() :void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -27,23 +26,20 @@ class AuthControllerTest extends TestCase
             'email' => 'johndoe@example.org',
             'password' => Hash::make('testpassword')
         ]);
-
     }
 
-    public function test_show_validation_error_when_both_fields_empty()
+    public function test_show_validation_error_when_both_fields_empty(): void
     {
-
         $response = $this->json('POST', route('auth.login'), [
             'email' => '',
             'password' => ''
         ]);
 
         $response->assertStatus(422)
-        ->assertJsonValidationErrors(['email', 'password']);
+            ->assertJsonValidationErrors(['email', 'password']);
     }
 
-
-    public function test_show_validation_error_on_email_when_credential_donot_match()
+    public function test_show_validation_error_on_email_when_credential_donot_match(): void
     {
         $response = $this->json('POST', route('auth.login'), [
             'email' => 'test@test.com',
@@ -54,10 +50,10 @@ class AuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
-    public function test_return_user_and_access_token_after_successful_login()
+    public function test_return_user_and_access_token_after_successful_login(): void
     {
         $response = $this->json('POST', route('auth.login'), [
-            'email' =>'johndoe@example.org',
+            'email' => 'johndoe@example.org',
             'password' => 'testpassword',
         ]);
 
@@ -65,16 +61,15 @@ class AuthControllerTest extends TestCase
             ->assertJsonStructure(['user', 'access_token']);
     }
 
-    public function test_non_authenticated_user_cannot_get_user_details()
+    public function test_non_authenticated_user_cannot_get_user_details(): void
     {
-
         $response = $this->json('GET', route('auth.user'));
 
         $response->assertStatus(401)
             ->assertSee('Unauthenticated');
     }
 
-    public function test_authenticated_user_can_get_user_details()
+    public function test_authenticated_user_can_get_user_details(): void
     {
         Sanctum::actingAs(
             User::first(),
@@ -86,7 +81,7 @@ class AuthControllerTest extends TestCase
             ->assertJsonStructure(['name', 'email']);
     }
 
-    public function test_non_authenticated_user_cannot_logout()
+    public function test_non_authenticated_user_cannot_logout(): void
     {
         $response = $this->json('POST', route('auth.logout'), []);
 
@@ -94,7 +89,7 @@ class AuthControllerTest extends TestCase
             ->assertSee('Unauthenticated');
     }
 
-    public function test_authenticated_user_can_logout()
+    public function test_authenticated_user_can_logout(): void
     {
         Sanctum::actingAs(
             User::first(),
@@ -105,9 +100,7 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-
-    // Password reset
-    public function test_return_validation_error_when_email_doenot_exist()
+    public function test_return_validation_error_when_email_doenot_exist(): void
     {
         $response = $this->json('POST', route('password.email'), ['email' => 'invalid@email.com']);
 
@@ -115,18 +108,16 @@ class AuthControllerTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
-    public function test_send_password_reset_link_if_email_exists()
+    public function test_send_password_reset_link_if_email_exists(): void
     {
         $user = User::first();
         $response = $this->json('POST', route('password.email'), ['email' => $user->email]);
 
         $response->assertStatus(200)
             ->assertJsonStructure(['message']);
-
-        // Notification::assertSentTo($user, ResetPassword::class); // running on issue with asserting notification
     }
 
-    public function test_reset_password_success()
+    public function test_reset_password_success(): void
     {
         $user = User::first();
         $token = Password::broker()->createToken($user);
