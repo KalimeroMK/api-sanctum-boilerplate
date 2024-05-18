@@ -15,15 +15,15 @@ class Helper
     public const INVALID_RESET_PASSWORD_TOKEN = 255;
 
     /**
-     * @param $class
+     * Get the short name of a class.
      *
+     * @param string $class
      * @return string
      */
-    public static function getResourceName($class): string
+    public static function getResourceName(string $class): string
     {
         try {
             $reflectionClass = new ReflectionClass($class);
-
             return $reflectionClass->getShortName();
         } catch (ReflectionException $exception) {
             return $exception->getMessage();

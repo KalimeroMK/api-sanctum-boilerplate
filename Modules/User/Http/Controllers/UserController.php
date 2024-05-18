@@ -3,161 +3,108 @@
 namespace Modules\User\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Modules\Core\Helpers\Helper;
 use Modules\Core\Http\Controllers\CoreController;
-use Modules\User\Http\Requests\UpdateRequest;
+use Modules\User\Http\Requests\Update;
 use Modules\User\Http\Resources\UserResource;
-use Modules\User\Models\User;
 use Modules\User\Service\UserService;
-
 
 class UserController extends CoreController
 {
+    private UserService $userService;
 
-    private UserService $user_service;
-
-    public function __construct(UserService $user_service)
+    public function __construct(UserService $userService)
     {
-        $this->user_service = $user_service;
+        $this->userService = $userService;
     }
 
     /**
      * @return AnonymousResourceCollection
      */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        return UserResource::collection(User::all());
+        return UserResource::collection($this->userService->getAll());
     }
 
     /**
-     * @param $id
-     *
-     * @return JsonResponse|string
-     */
-    public function show($id)
-    {
-        return $this
-            ->setMessage(
-                __(
-                    'apiResponse.ok',
-                    [
-                        'resource' => Helper::getResourceName(
-                            $this->user_service->user_repository->model
-                        ),
-                    ]
-                )
-            )
-            ->respond(new UserResource($this->user_service->show($id)));
-    }
-
-    /**
-     * @param  UpdateRequest  $request
-     * @param $id
-     *
-     * @return JsonResponse|string
-     */
-    public function update(UpdateRequest $request, $id)
-    {
-        return $this
-            ->setMessage(
-                __(
-                    'apiResponse.updateSuccess',
-                    [
-                        'resource' => Helper::getResourceName(
-                            $this->user_service->user_repository->model
-                        ),
-                    ]
-                )
-            )
-            ->respond(new UserResource($this->user_service->update($id, $request->validated())));
-    }
-
-
-    /**
-     * @param $id
-     *
-     * @return JsonResponse|string
-     */
-    public function destroy($id)
-    {
-        return $this
-            ->setMessage(
-                __(
-                    'apiResponse.deleteSuccess',
-                    [
-                        'resource' => Helper::getResourceName(
-                            $this->user_service->user_repository->model
-                        ),
-                    ]
-                )
-            )
-            ->respond($this->user_service->destroy($id));
-    }
-
-    /**
-     * @return string
-     */
-    public function authUser()
-    {
-        return $this
-            ->setMessage(
-                __(
-                    'apiResponse.deleteSuccess',
-                    [
-                        'resource' => Helper::getResourceName(
-                            $this->user_service->user_repository->model
-                        ),
-                    ]
-                )
-            )
-            ->respond(new UserResource(Auth::user()));
-    }
-
-    /**
-     * @param  Request  $request
+     * @param int $id
      * @return JsonResponse
      */
-    public function addUsersNewsCategory(Request $request)
+    public function show(int $id): JsonResponse
     {
+        $resourceName = Helper::getResourceName($this->userService->userRepository->model);
+        $user = $this->userService->findById($id);
+
         return $this
-            ->setMessage(
-                __(
-                    'apiResponse.deleteSuccess',
-                    [
-                        'resource' => Helper::getResourceName(
-                            $this->user_service->user_repository->model
-                        ),
-                    ]
-                )
-            )
-            ->respond(new UserResource($this->user_service->addUsersNewsCategory($request->all())));
+            ->setMessage(__('apiResponse.ok', ['resource' => $resourceName]))
+            ->respond(['data' => new UserResource($user)]);
+    }
+
+    /**
+     * @param Update $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function update(Update $request, int $id): JsonResponse
+    {
+        $resourceName = Helper::getResourceName($this->userService->userRepository->model);
+        $user = $this->userService->update($id, $request->validated());
+
+        return $this
+            ->setMessage(__('apiResponse.updateSuccess', ['resource' => $resourceName]))
+            ->respond(['data' => new UserResource($user)]);
+    }
+
+    /**
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $resourceName = Helper::getResourceName($this->userService->userRepository->model);
+        $this->userService->delete($id);
+
+        return $this
+            ->setMessage(__('apiResponse.deleteSuccess', ['resource' => $resourceName]))
+            ->respond(['message' => __('apiResponse.deleteSuccess', ['resource' => $resourceName])]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function authUser(): JsonResponse
+    {
+        $resourceName = Helper::getResourceName($this->userService->userRepository->model);
+
+        return $this
+            ->setMessage(__('apiResponse.ok', ['resource' => $resourceName]))
+            ->respond(['data' => new UserResource(Auth::user())]);
     }
 
 
     /**
-     * @param $id
-     *
-     * @return JsonResponse|string
+     * @param int $id
+     * @return JsonResponse
      */
-    public function restore($id)
+    public function restore(int $id): JsonResponse
     {
+        $resourceName = Helper::getResourceName($this->userService->userRepository->model);
+        $this->userService->restore($id);
+
         return $this
-            ->setMessage(
-                __(
-                    'apiResponse.RestoreSuccess',
-                    [
-                        'resource' => Helper::getResourceName(
-                            $this->user_service->user_repository->model
-                        ),
-                    ]
-                )
-            )
-            ->respond($this->user_service->restoreUser($id));
+            ->setMessage(__('apiResponse.restoreSuccess', ['resource' => $resourceName]))
+            ->respond(['message' => __('apiResponse.restoreSuccess', ['resource' => $resourceName])]);
     }
 
+    public function findByIdWithTrashed(int $id): JsonResponse
+    {
+        $resourceName = Helper::getResourceName($this->userService->userRepository->model);
+        $user = $this->userService->findByIdWithTrashed($id);
 
-
+        return $this
+            ->setMessage(__('apiResponse.ok', ['resource' => $resourceName]))
+            ->respond(['data' => new UserResource($user)]);
+    }
 }

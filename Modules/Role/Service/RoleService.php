@@ -2,74 +2,47 @@
 
 namespace Modules\Role\Service;
 
+use Modules\Core\Service\CoreService;
+use Modules\Role\Models\Role;
 use Modules\Role\Repository\RoleRepository;
 
-class RoleService
+class RoleService extends CoreService
 {
-
-
     public RoleRepository $roleRepository;
 
     public function __construct(RoleRepository $roleRepository)
     {
+        parent::__construct($roleRepository);
         $this->roleRepository = $roleRepository;
     }
 
     /**
-     * @return mixed|string
-     */
-    public function getAll(): mixed
-    {
-        return $this->roleRepository->findAll();
-    }
-
-    /**
-     * @param $data
+     * Create a new role.
      *
-     * @return mixed
+     * @param array<string, mixed> $data
+     * @return Role
      */
-    public function store($data): mixed
+    public function create(array $data): Role
     {
-        return $this->roleRepository->create($data);
+        /** @var Role $role */
+        $role = $this->roleRepository->create(['name' => $data['name']]);
+        $role->syncPermissions($data['permission']);
+        return $role;
     }
 
     /**
-     * @param $id
+     * Update an existing role.
      *
-     * @return mixed|string
+     * @param int $id
+     * @param array<string, mixed> $data
+     * @return Role
      */
-    public function show($id): mixed
+    public function update(int $id, array $data): Role
     {
-        return $this->roleRepository->findById($id);
-    }
-
-    /**
-     * @param $id
-     *
-     * @return mixed|string
-     */
-    public function edit($id): mixed
-    {
-        return $this->roleRepository->findById($id);
-    }
-
-    /**
-     * @param $id
-     * @param $data
-     *
-     * @return mixed
-     */
-    public function update($id, $data): mixed
-    {
-        return $this->roleRepository->update($id, $data);
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function destroy($id): mixed
-    {
-        return $this->roleRepository->delete($id);
+        /** @var Role $role */
+        $role = $this->findById($id);
+        $role->update(['name' => $data['name']]);
+        $role->syncPermissions($data['permission']);
+        return $role->fresh();
     }
 }

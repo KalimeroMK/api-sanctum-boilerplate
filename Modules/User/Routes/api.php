@@ -16,3 +16,4 @@ use Modules\User\Http\Controllers\UserController;
 
 Route::apiResource('users', UserController::class);
 Route::post('users_restore/{id}', [UserController::class, 'restore'])->name('user.restore');
+Route::get('users_with_trashed/{id}', [UserController::class, 'findByIdWithTrashed'])->name('user.withTrashed');

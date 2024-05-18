@@ -10,7 +10,12 @@ class Permission extends BasePermission
 {
     use HasFactory;
 
-    public $guard_name = 'api';
+    /**
+     * The name of the guard used by the model.
+     *
+     * @var string
+     */
+    public string $guard_name = 'api';
 
     /**
      * @return PermissionFactory

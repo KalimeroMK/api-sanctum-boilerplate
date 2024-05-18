@@ -4,8 +4,6 @@ namespace Modules\User\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Crematorium\Http\Resource\CrematoriumResource;
-use Modules\Organization\Http\Resource\OrganizationResource;
 use Modules\User\Models\User;
 
 /** @mixin User */
@@ -14,7 +12,7 @@ class UserResource extends JsonResource
     /**
      * @param  Request  $request
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray($request): array
     {

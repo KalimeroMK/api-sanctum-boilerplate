@@ -1,15 +1,19 @@
 <?php
 
-namespace Modules\Permission\Http\Requests;
+namespace Modules\Role\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class Update extends FormRequest
 {
+    /**
+     * @return string[]
+     */
     public function rules(): array
     {
         return [
-            'name' => 'required|string'
+            'name' => 'required',
+            'permission' => 'required',
         ];
     }
 

@@ -4,10 +4,10 @@ namespace Tests\Feature\Api\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\Sanctum;
 use Modules\User\Models\User;
-use Notification;
 use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
@@ -91,7 +91,7 @@ class AuthControllerTest extends TestCase
         $response = $this->json('POST', route('auth.logout'), []);
 
         $response->assertStatus(401)
-            ->assertSee('Unauthenticated');;
+            ->assertSee('Unauthenticated');
     }
 
     public function test_authenticated_user_can_logout()

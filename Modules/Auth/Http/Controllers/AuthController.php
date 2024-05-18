@@ -23,10 +23,9 @@ class AuthController extends Controller
 
     /**
      * @param CreateRequest $request
-     *
      * @return JsonResponse
      */
-    public function signup(CreateRequest $request)
+    public function signup(CreateRequest $request): JsonResponse
     {
         if (User::create(
             [
@@ -46,10 +45,9 @@ class AuthController extends Controller
 
     /**
      * @param Request $request
-     *
      * @return JsonResponse
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $validate = Validator::make($request->all(), [
                 'email' => 'required|email|exists:users',
@@ -76,29 +74,44 @@ class AuthController extends Controller
         ], 200);
     }
 
-    /*
-     * Revoke token; only remove token that is used to perform logout (i.e. will not revoke all tokens)
-    */
-    public function logout(Request $request)
+    /**
+     * Revoke token; only remove the token that is used to perform logout (i.e. will not revoke all tokens)
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(null, 200);
     }
 
-    /*
+    /**
      * Get authenticated user details
-    */
-    public function getAuthenticatedUser(Request $request)
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getAuthenticatedUser(Request $request): JsonResponse
     {
-        return $request->user();
+        $user = $request->user();
+        return response()->json([
+            'user' => $user
+        ], 200);
     }
 
-    public function sendPasswordResetLinkEmail(Request $request)
+    /**
+     * Send password reset link email
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendPasswordResetLinkEmail(Request $request): JsonResponse
     {
         $request->validate(['email' => 'required|email|exists:users']);
 
-        // Delete all old code that user send before.
+        // Delete all old codes that user sent before.
         DB::table('password_resets')->where([
             ['email', $request['email']],
         ])->delete();
@@ -107,7 +120,7 @@ class AuthController extends Controller
         DB::table('password_resets')
             ->insert(
                 [
-                    'email' => $request->all()['email'],
+                    'email' => $request['email'],
                     'token' => $token,
                     'created_at' => Carbon::now(),
                 ]
@@ -128,9 +141,13 @@ class AuthController extends Controller
     }
 
     /**
+     * Reset the user's password
+     *
+     * @param Request $request
+     * @return JsonResponse
      * @throws Exception
      */
-    public function resetPassword(Request $request)
+    public function resetPassword(Request $request): JsonResponse
     {
         $request->validate([
             'token' => 'required|exists:password_resets',
@@ -144,7 +161,7 @@ class AuthController extends Controller
             return new JsonResponse(
                 [
                     'success' => true,
-                    'message' => 'You password was successfully change',
+                    'message' => 'You password was successfully changed',
                 ],
                 200
             );

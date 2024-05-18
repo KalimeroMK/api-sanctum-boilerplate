@@ -15,7 +15,6 @@ class PermissionTableSeeder extends Seeder
      *
      * @return void
      */
-
     public function run(): void
     {
         // Reset cached roles and permissions
@@ -48,9 +47,11 @@ class PermissionTableSeeder extends Seeder
             'categories-edit',
             'categories-delete',
         ];
+
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
+
         // create roles and assign existing permissions
         $role1 = Role::create(['name' => 'manager']);
         $role1->givePermissionTo([
@@ -73,18 +74,21 @@ class PermissionTableSeeder extends Seeder
         $role3->givePermissionTo(Permission::all());
 
         // create demo users
+        /** @var User $user */
         $user = User::factory()->create([
             'name' => 'Example User',
             'email' => 'manager@mail.com',
         ]);
         $user->assignRole($role1);
 
+        /** @var User $user */
         $user = User::factory()->create([
             'name' => 'Example client User',
             'email' => 'client@mail.com',
         ]);
         $user->assignRole($role2);
 
+        /** @var User $user */
         $user = User::factory()->create([
             'name' => 'Example Super-Admin User',
             'email' => 'superadmin@mail.com',

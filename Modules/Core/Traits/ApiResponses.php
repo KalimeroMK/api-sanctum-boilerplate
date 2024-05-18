@@ -23,64 +23,65 @@ trait ApiResponses
     public string $title = 'Success';
 
     /**
-     * @param  int  $code
+     * Sets the HTTP response code.
      *
+     * @param  int  $code
      * @return $this
      */
     public function setCode(int $code = 200): static
     {
         $this->responseCode = $code;
-
         return $this;
     }
 
     /**
-     * @param $message
+     * Sets the response message.
      *
+     * @param string $message
      * @return $this
      */
-    public function setMessage($message): static
+    public function setMessage(string $message): static
     {
         $this->message = $message;
-
         return $this;
     }
 
     /**
-     * @param $title
+     * Sets the response title.
      *
+     * @param string $title
      * @return $this
      */
-    public function setTitle($title): static
+    public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
     /**
-     * @param $data
+     * Generates a JSON response with data.
      *
+     * @param array<string, mixed> $data
      * @return JsonResponse
      */
-    public function respond($data): JsonResponse
+    public function respond(array $data): JsonResponse
     {
-        return response()
-            ->json(
-                [
-                    'message' => $this->message,
-                    'code' => $this->responseCode,
-                    'data' => $data,
-                ],
-                $this->responseCode
-            );
+        return response()->json(
+            [
+                'message' => $this->message,
+                'code' => $this->responseCode,
+                'data' => $data,
+            ],
+            $this->responseCode
+        );
     }
 
     /**
-     * @param  Exception  $exception
-     * @param  array  $data
-     * @param  string  $title
+     * Generates a JSON response for exceptions with additional data.
      *
+     * @param Exception $exception
+     * @param array<string, mixed> $data
+     * @param string $title
      * @return JsonResponse
      */
     public function exceptionRespond(Exception $exception, array $data = [], string $title = 'Error'): JsonResponse
@@ -89,47 +90,50 @@ trait ApiResponses
             'title' => $title,
             'message' => $exception->getMessage(),
             'code' => $exception->getCode(),
-        ], $exception->getCode());
+            'data' => $data
+        ], $exception->getCode() ? $exception->getCode() : 500);
     }
 
     /**
-     * @param  Exception  $exception
-     * @param  string  $title
+     * Generates a JSON response for exceptions without data.
      *
+     * @param Exception $exception
+     * @param string $title
      * @return JsonResponse
      */
     public function respondWithExceptionError(Exception $exception, string $title = 'Error'): JsonResponse
     {
-        return response()
-            ->json(
-                [
-                    'title' => $this->title,
-                    'message' => $this->message,
-                ],
-                $exception->getCode()
-            );
+        return response()->json(
+            [
+                'title' => $title,
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode()
+            ],
+            $exception->getCode() ? $exception->getCode() : 500
+        );
     }
 
     /**
-     * @param $message
-     * @param $code
+     * Generates an error JSON response.
      *
+     * @param string $message
+     * @param int $code
      * @return JsonResponse
      */
-    protected function errorResponse($message, $code): JsonResponse
+    protected function errorResponse(string $message, int $code): JsonResponse
     {
         return response()->json(['message' => $message, 'code' => $code], $code);
     }
 
     /**
-     * @param $data
-     * @param $code
+     * Generates a success JSON response.
      *
+     * @param array<string, mixed> $data
+     * @param int $code
      * @return JsonResponse
      */
-    private function successResponse($data, $code): JsonResponse
+    private function successResponse(array $data, int $code): JsonResponse
     {
         return response()->json($data, $code);
     }
-
 }
