@@ -130,7 +130,9 @@ class AuthControllerTest extends TestCase
             'password_confirmation' => $new_password
         ]);
 
+        // Add debugging output
         $response->assertStatus(200)
             ->assertJsonStructure(['message']);
     }
+
 }

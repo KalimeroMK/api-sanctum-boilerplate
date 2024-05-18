@@ -143,26 +143,24 @@ class AuthController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function resetPassword(Request $request): JsonResponse
+    public function resetPassword(Request $request)
     {
         $request->validate([
-            'token' => 'required|exists:password_resets',
             'email' => 'required|email',
+            'token' => 'required',
             'password' => 'required|min:8|confirmed',
         ]);
-        try {
-            User::whereEmail($request['email'])->update([
-                'password' => Hash::make($request['password'])
-            ]);
-            return new JsonResponse(
-                [
-                    'success' => true,
-                    'message' => 'You password was successfully changed',
-                ],
-                200
-            );
-        } catch (Exception $exception) {
-            throw ($exception);
-        }
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => 'Password reset successfully.'], 200)
+            : response()->json(['message' => __($status)], 422);
     }
 }
