@@ -134,4 +134,25 @@ class Repository implements RepositoryInterface
         return $modelInstance->withTrashed()->find($id);
     }
 
+    /**
+     * @param  string  $column
+     * @param $value
+     * @param  array  $relations
+     * @return mixed
+     */
+    public function findByWithRelations(string $column, $value, array $relations): mixed
+    {
+        return $this->model::with($relations)->where($column, $value)->get();
+    }
+
+    /**
+     * @param  int  $id
+     * @param  array  $relations
+     * @return mixed
+     */
+    public function findByIdWithRelations(int $id, array $relations): mixed
+    {
+        return $this->model::with($relations)->findOrFail($id);
+    }
+
 }
